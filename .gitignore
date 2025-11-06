@@ -1,0 +1,27 @@
+# Ignore local environment folders
+env/
+.venv/
+venv/
+
+# Ignore data/audio
+data/
+interim/
+*.wav
+*.mp3
+*.flac
+*.m4a
+
+# Ignore temporary and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+
+# Ignore notebooks checkpoints
+.ipynb_checkpoints/
+
+# Ignore system / IDE files
+.vscode/
+.idea/
+
