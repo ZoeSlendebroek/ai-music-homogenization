@@ -1,0 +1,2 @@
+ai_mean_distance,ai_median_distance,ai_std_distance,human_mean_distance,human_median_distance,human_std_distance,ks_statistic,ks_pvalue,mannwhitney_statistic,mannwhitney_pvalue,cohens_d
+10.068183794275637,9.877147352067876,1.8639598773966437,11.797078219557244,11.549685188624636,2.4040974751907767,0.33157894736842103,1.202481381492662e-09,10353.0,3.2636460078861894e-13,-0.8037444638628602
