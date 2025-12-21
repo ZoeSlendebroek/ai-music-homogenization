@@ -19,11 +19,11 @@ class HomogenizationAnalyzer:
     def __init__(self, features_df):
         self.df = features_df.copy()
         
-        # UPDATED: Use 'side' column instead of 'label'
+        # side column as key instead of 'label'
         self.ai_df = features_df[features_df['side'] == 'AI'].copy()
         self.human_df = features_df[features_df['side'] == 'Human'].copy()
         
-        # UPDATED: Exclude new metadata columns
+        # excluding new metadata columns
         self.feature_cols = [col for col in features_df.columns 
                             if col not in ['filename', 'side', 'pair_key', 'track_id']]
         
@@ -318,7 +318,7 @@ class HomogenizationAnalyzer:
 
 
 if __name__ == "__main__":
-    # UPDATED: Use new file path
+    # new file path
     project_root = Path(__file__).resolve().parent.parent
     features_csv = project_root / "data/afrobeat/matched_pairs_comprehensive.csv"
     
@@ -331,15 +331,9 @@ if __name__ == "__main__":
     
     # Run analysis
     analyzer = HomogenizationAnalyzer(df)
-    
-    # Run all analyses
     analyzer.analyze_variance_homogeneity()
     analyzer.analyze_pairwise_distances()
     analyzer.analyze_feature_space_coverage()
     analyzer.analyze_entropy_diversity()
-    
-    # Generate report
     analyzer.generate_summary_report()
-    
-    # Save results
     analyzer.save_results()

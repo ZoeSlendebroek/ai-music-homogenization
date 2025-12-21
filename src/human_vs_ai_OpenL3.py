@@ -2,9 +2,6 @@
 """
 OVERALL DIVERSITY: HUMAN vs AI AFROBEATS (OpenL3 embeddings)
 
-Research Question:
-    Is there more variety within human Afrobeats vs AI Afrobeats?
-
 This version uses self-supervised OpenL3 embeddings instead of hand-crafted
 librosa features. For each track:
 
@@ -29,25 +26,19 @@ Then:
 
 import json
 from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import librosa
 import openl3
-
 from scipy.spatial.distance import pdist
 from scipy.stats import mannwhitneyu
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 
 
-# -----------------------------
 # OpenL3 EMBEDDING EXTRACTION
-# -----------------------------
-
 def extract_openl3_embedding(
     filepath,
     sr_target=48000,
@@ -93,14 +84,11 @@ def extract_openl3_embedding(
         return emb_mean.astype(np.float32)
 
     except Exception as e:
-        print(f"    ❌ OpenL3 failed for {filepath}: {e}")
+        print(f"     OpenL3 failed for {filepath}: {e}")
         return None
 
 
-# -----------------------------
 # DIVERSITY METRICS
-# -----------------------------
-
 def compute_diversity_metrics(X_norm, label):
     """
     Compute multiple diversity metrics for a collection in a normalized
@@ -175,10 +163,7 @@ def plot_cov_ellipse(ax, data, color, alpha=0.3):
     ax.add_patch(ell)
 
 
-# -----------------------------
 # MAIN ANALYSIS
-# -----------------------------
-
 def main():
     print("=" * 72)
     print("OVERALL DIVERSITY: HUMAN vs AI AFROBEATS (OpenL3 embeddings)")
@@ -217,7 +202,7 @@ def main():
         print(f"  [H {idx+1:02d}/{len(human_meta):02d}] {fname}...", end=" ")
 
         if not audio_path.exists():
-            print("❌ file not found, skipping")
+            print("file not found, skipping")
             continue
 
         emb = extract_openl3_embedding(audio_path)
@@ -229,9 +214,9 @@ def main():
         human_filenames.append(fname)
         print("✓")
 
-    print(f"\n✅ Got embeddings for {len(human_embeddings)} human tracks.")
+    print(f"\nGot embeddings for {len(human_embeddings)} human tracks.")
 
-    print("\n🎧 Extracting OpenL3 embeddings for AI tracks...")
+    print("\nExtracting OpenL3 embeddings for AI tracks...")
     ai_embeddings = []
     ai_filenames = []
 
@@ -241,7 +226,7 @@ def main():
         print(f"  [A {idx+1:02d}/{len(ai_meta):02d}] {fname}...", end=" ")
 
         if not audio_path.exists():
-            print("❌ file not found, skipping")
+            print("file not found, skipping")
             continue
 
         emb = extract_openl3_embedding(audio_path)
@@ -253,7 +238,7 @@ def main():
         ai_filenames.append(fname)
         print("✓")
 
-    print(f"\n✅ Got embeddings for {len(ai_embeddings)} AI tracks.\n")
+    print(f"\nGot embeddings for {len(ai_embeddings)} AI tracks.\n")
 
     if len(human_embeddings) < 2 or len(ai_embeddings) < 2:
         raise ValueError("Need at least 2 tracks in each group to compute diversity.")
@@ -451,7 +436,7 @@ def main():
 
     fig_path = out_dir / "overall_diversity_openl3.png"
     plt.savefig(fig_path, dpi=150, bbox_inches="tight")
-    print(f"✅ Saved visualization to {fig_path}")
+    print(f"Saved visualization to {fig_path}")
 
     # ----------------- Save JSON results -----------------
     results = {
@@ -487,7 +472,7 @@ def main():
     json_path = out_dir / "diversity_analysis_openl3.json"
     with open(json_path, "w") as f:
         json.dump(results, f, indent=2)
-    print(f"✅ Saved detailed results to {json_path}")
+    print(f"Saved detailed results to {json_path}")
 
     print("\n" + "=" * 72)
     print("ANALYSIS COMPLETE (OpenL3)")

@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """
-Research Question: Is there more variety within human Afrobeats vs AI Afrobeats?
-
-This measures OVERALL DIVERSITY within each collection:
+This script uses librosa to explore and measure the OVERALL DIVERSITY within each collection:
 - How spread out are human tracks in feature space?
 - How spread out are AI tracks in feature space?
 - Which collection is more homogeneous?
@@ -133,7 +131,7 @@ def main():
         return
     
     # Extract AI features
-    print("\n📊 Extracting AI features...")
+    print("\nExtracting AI features...")
     ai_features = []
     for idx, row in ai_meta.iterrows():
         filepath = ai_audio_dir / row['filename']
@@ -151,7 +149,7 @@ def main():
     # Combine
     all_data = pd.concat([human_feat_df, ai_feat_df], ignore_index=True)
     
-    print(f"\n📏 Comparing {len(human_feat_df)} human tracks vs {len(ai_feat_df)} AI tracks")
+    print(f"\nComparing {len(human_feat_df)} human tracks vs {len(ai_feat_df)} AI tracks")
     print(f"   Using {len(feature_cols)} features")
     
     # Standardize features JOINTLY
@@ -220,9 +218,8 @@ def main():
     else:
         print(f"  Very similar diversity levels")
     
-    # Visualizations
-    print("\n📊 Creating visualizations...")
-    
+
+    # VISUALISATIONS
     fig = plt.figure(figsize=(16, 10))
     gs = fig.add_gridspec(3, 3, hspace=0.3, wspace=0.3)
     
@@ -331,7 +328,7 @@ def main():
     
     plt.savefig('../results/similarity_analysis/overall_diversity_comparison.png', 
                dpi=150, bbox_inches='tight')
-    print("✅ Saved visualization to overall_diversity_comparison.png")
+    print("Saved visualization to overall_diversity_comparison.png")
     
     # Save detailed results
     results = {
@@ -358,7 +355,7 @@ def main():
         }
         json.dump(results_json, f, indent=2)
     
-    print("✅ Saved detailed results to diversity_analysis.json")
+    print("Saved detailed results to diversity_analysis.json")
     
     print("\n" + "="*70)
     print("ANALYSIS COMPLETE")

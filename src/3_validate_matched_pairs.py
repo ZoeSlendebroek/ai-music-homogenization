@@ -18,11 +18,11 @@ class PairValidator:
     def __init__(self, features_csv):
         self.features = pd.read_csv(features_csv)
         
-        # UPDATED: Use 'side' column instead of 'label'
+        # uses 'side' column as key instead of 'label'
         self.ai_features = self.features[self.features['side'] == 'AI'].copy()
         self.human_features = self.features[self.features['side'] == 'Human'].copy()
         
-        # UPDATED: Exclude new metadata columns
+        # exclude new metadata columns
         self.feature_cols = [col for col in self.features.columns 
                             if col not in ['filename', 'side', 'pair_key', 'track_id']]
         
@@ -42,7 +42,7 @@ class PairValidator:
         
         pair_distances = []
         
-        # UPDATED: Group by pair_key to match AI-Human pairs
+        # Group by pair_key to match AI-Human pairs
         unique_pairs = self.ai_features['pair_key'].unique()
         
         for pair_key in unique_pairs:
@@ -135,9 +135,9 @@ class PairValidator:
         print(f"p-value: {p_value:.4f}")
         
         if p_value < 0.05:
-            print("\n✓ Matched pairs are significantly more similar than random pairs")
+            print("\n Matched pairs are significantly more similar than random pairs!!")
         else:
-            print("\n✗ WARNING: Matched pairs not significantly better than random")
+            print("\n WARNING: Matched pairs not significantly better than random!!")
         
         return {
             'matched_mean': matched_mean,
@@ -305,8 +305,8 @@ if __name__ == "__main__":
     # Generate report
     validator.generate_validation_report(pair_df, permutation_results)
     
-    # Save results
+    # Results
     pair_df.to_csv('pair_validation_results.csv', index=False)
     pair_stats.to_csv('pair_statistics.csv', index=False)
     
-    print("\n✓ Validation complete. Results saved.")
+    print("\n Validation complete. Results saved.") # Check!

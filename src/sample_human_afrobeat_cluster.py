@@ -44,16 +44,17 @@ def itunes_preview_url(artist, title):
     except Exception:
         return None
 
-# ---------- CLI ----------
+# Argument configuration
 ap = argparse.ArgumentParser()
 ap.add_argument("--playlists", required=True, help="comma-separated playlist IDs")
 ap.add_argument("--out_meta", default="data/human/afrobeat/candidates_spotify.csv")
-ap.add_argument("--year_min", type=int, default=2015)
+ap.add_argument("--year_min", type=int, default=2015) # 2015 - 2025
 ap.add_argument("--year_max", type=int, default=2025)
 ap.add_argument("--max_per_playlist", type=int, default=500)
 args = ap.parse_args()
 
-# ---------- Spotify auth ----------
+# Spotify authentication
+# Store your own credentials in secrets!
 sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
     client_id=os.environ["SPOTIFY_CLIENT_ID"],
     client_secret=os.environ["SPOTIFY_CLIENT_SECRET"]
@@ -63,13 +64,13 @@ def year_ok(d):
     y = (d or "")[:4]
     return y.isdigit() and args.year_min <= int(y) <= args.year_max
 
-# ---------- Collect candidates ----------
+# Candidate Collection
 playlist_ids = [s.strip() for s in args.playlists.split(",")]
 cands = []
 seen = set()
 
 for pid in playlist_ids:
-    print(f"📻 Scanning playlist {pid}...")
+    print(f"Scanning playlist {pid}...")
     results = sp.playlist_items(pid, additional_types=["track"], limit=100)
     grabbed = 0
     while results and grabbed < args.max_per_playlist:
@@ -103,16 +104,16 @@ for pid in playlist_ids:
         time.sleep(0.05)
 
 C = pd.DataFrame(cands)
-print(f"✅ Raw candidates with previews: {len(C)}")
+print(f"Raw candidates with previews: {len(C)}")
 
 if C.empty:
     raise SystemExit("No candidates with previews found. Check playlist IDs or year range.")
 
-# ---------- Save big pool (no Spotify audio_features) ----------
+# Save big pool of potential candidates
 out_path = Path(args.out_meta)
 out_path.parent.mkdir(parents=True, exist_ok=True)
 
 # Just use the metadata + iTunes preview URLs
 C.to_csv(out_path, index=False)
-print(f"💾 Saved human candidate pool (no Spotify audio_features) to: {out_path}")
+print(f"Saved human candidate pool (no Spotify audio_features) to: {out_path}")
 

@@ -2,10 +2,20 @@
 """
 Extract audio features for AI-generated Afrobeats tracks.
 
-Reads an AI metadata CSV (with at least: filename, prompt_id, replicate, etc.),
-loads each corresponding audio file from disk, extracts the same features as
-the human pipeline (tempo, spectral stats, MFCCs, chroma), and writes out an
-updated CSV with feature columns added.
+This script reads an AI metadata CSV (which must include a `filename` column),
+loads each corresponding audio file from a provided directory, extracts a fixed
+set of audio features using librosa, and writes a new CSV with those feature
+columns appended.
+
+Feature extraction is intentionally aligned with the human pipeline so that the
+resulting CSV can be used for direct comparison and downstream modeling.
+
+For each audio file, the script:
+  - loads mono audio at a target sample rate
+  - normalizes duration to a fixed 30-second window:
+      * if the audio is longer than 30 seconds, it takes the centered 30 seconds
+      * if the audio is shorter, it pads/truncates to exactly 30 seconds
+  - computes tempo, MFCC means (13), chroma means (12), and common spectral stats
 
 Usage:
   python extract_ai_features.py \
@@ -18,36 +28,46 @@ import argparse
 from pathlib import Path
 import os
 import tempfile
-
 import numpy as np
 import pandas as pd
 import librosa
-
 
 
 def extract_features_from_audio(file_path, sr_target=22050, max_duration_sec=30.0):
     """
     Load a local audio file and extract features with librosa.
 
-    Returns a dict with:
-      - tempo
-      - spectral_centroid, spectral_bandwidth, spectral_rolloff, zero_crossing_rate
-      - mfcc_1..mfcc_13
-      - chroma_1..chroma_12
-    or None if loading fails.
+    Parameters
+    ----------
+    file_path : str or Path
+        Path to the audio file on disk.
+    sr_target : int
+        Target sample rate for loading audio. Audio is resampled to this rate.
+    max_duration_sec : float
+        Duration to standardize audio to, in seconds. Audio is either centered and
+        cropped to this duration, or padded to this duration.
+
+    Returns
+    -------
+    dict or None
+        A dictionary containing:
+          - tempo
+          - spectral_centroid, spectral_bandwidth, spectral_rolloff, zero_crossing_rate
+          - mfcc_1..mfcc_13 (means over time)
+          - chroma_1..chroma_12 (means over time)
+        Returns None if loading or feature extraction fails.
     """
     try:
         y, sr = librosa.load(file_path, sr=sr_target, mono=True)
 
         target_len = int(30 * sr)  # 30 seconds in samples
-        
+
         if len(y) > target_len:
-            # **FIX: Use consistent window instead of random**
-            # Option 1: Take middle section
+            # Use a consistent 30-second window by taking the centered segment.
             start = (len(y) - target_len) // 2
             y = y[start : start + target_len]
-            
-            # Option 2: Skip intro, take next 30 seconds
+
+            # Alternative windowing strategy (kept as a commented option):
             # start = int(5 * sr)  # skip first 5 seconds
             # y = y[start : start + target_len]
         else:
@@ -88,26 +108,34 @@ def extract_features_from_audio(file_path, sr_target=22050, max_duration_sec=30.
         return feat
 
     except Exception as e:
-        print(f"    ❌ Error processing {file_path}: {e}")
+        print(f"    Error processing {file_path}: {e}")
         return None
 
 
-def main():
+def main() -> None:
+    """
+    Parse CLI arguments, extract features for each AI track, and write an updated metadata CSV.
+
+    The input metadata CSV must include a `filename` column. Each filename is resolved relative
+    to `--audio_dir`. Files that are missing or fail feature extraction are skipped.
+
+    The output CSV contains the original metadata columns plus the extracted feature columns.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument(
         "--ai_meta",
         required=True,
-        help="Path to AI metadata CSV (must have at least a 'filename' column)."
+        help="Path to AI metadata CSV (must have at least a 'filename' column).",
     )
     ap.add_argument(
         "--audio_dir",
         required=True,
-        help="Directory containing AI audio files (e.g., ai_afrobeat_XX_YY.wav)."
+        help="Directory containing AI audio files (e.g., ai_afrobeat_XX_YY.wav).",
     )
     ap.add_argument(
         "--out_meta",
         required=True,
-        help="Path to output CSV with features added."
+        help="Path to output CSV with features added.",
     )
     args = ap.parse_args()
 
@@ -124,17 +152,17 @@ def main():
     if "filename" not in df.columns:
         raise ValueError("AI meta CSV must contain a 'filename' column.")
 
-    print(f"📊 Loaded AI metadata: {len(df)} rows from {ai_meta_path}")
+    print(f"Loaded AI metadata: {len(df)} rows from {ai_meta_path}")
 
     rows = []
     for idx, row in df.iterrows():
         fname = row["filename"]
         audio_path = audio_dir / fname
 
-        print(f"  [{idx+1:03d}] {fname}:", end=" ")
+        print(f"  [{idx + 1:03d}] {fname}:", end=" ")
 
         if not audio_path.exists():
-            print("❌ file not found")
+            print("file not found")
             continue
 
         feat = extract_features_from_audio(audio_path)
@@ -148,11 +176,11 @@ def main():
         rows.append(meta)
 
     out_df = pd.DataFrame(rows)
-    print(f"\n✅ Extracted features for {len(out_df)} AI tracks.")
+    print(f"\nExtracted features for {len(out_df)} AI tracks.")
 
     out_meta_path.parent.mkdir(parents=True, exist_ok=True)
     out_df.to_csv(out_meta_path, index=False)
-    print(f"💾 Saved AI meta with features to: {out_meta_path}")
+    print(f"Saved AI meta with features to: {out_meta_path}")
 
 
 if __name__ == "__main__":

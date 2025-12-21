@@ -28,7 +28,6 @@ class AIHumanClassifier:
         
         # Prepare data
         self.X = self.df[self.feature_cols].values
-        # UPDATED: Use 'side' column instead of 'label'
         self.y = (self.df['side'] == 'AI').astype(int).values
         
         # Standardize features
@@ -160,7 +159,7 @@ class AIHumanClassifier:
         print(f"  AI tracks: {np.mean(ai_confidence):.3f} ± {np.std(ai_confidence):.3f}")
         print(f"  Human tracks: {np.mean(human_confidence):.3f} ± {np.std(human_confidence):.3f}")
         
-        # UPDATED: Use 'side' column
+        # use 'side' column
         track_results = pd.DataFrame({
             'filename': self.df['filename'],
             'side': self.df['side'],
@@ -201,7 +200,7 @@ class AIHumanClassifier:
         
         importance_df = self.results['feature_importance']
         
-        # Define feature categories
+        # Feature categories
         def categorize_feature(feature_name):
             if 'mfcc' in feature_name:
                 return 'Timbral (MFCC)'
@@ -244,13 +243,13 @@ class AIHumanClassifier:
         
         track_results = self.results['distinguishability']
         
-        # UPDATED: Group by pair_key
+        # Group by pair_key
         unique_pairs = self.df['pair_key'].unique()
         
         pair_predictions = []
         
         for pair_key in unique_pairs:
-            # Get predictions for this pair
+            # predictions for this pair
             ai_pred = track_results[(self.df['pair_key'] == pair_key) & (self.df['side'] == 'AI')]
             human_pred = track_results[(self.df['pair_key'] == pair_key) & (self.df['side'] == 'Human')]
             
@@ -330,7 +329,7 @@ class AIHumanClassifier:
 
 
 if __name__ == "__main__":
-    # UPDATED: Use new file path
+    # UPDATED: new file path
     project_root = Path(__file__).resolve().parent.parent
     features_csv = project_root / "data/afrobeat/matched_pairs_comprehensive.csv"
     

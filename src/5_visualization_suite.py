@@ -33,11 +33,11 @@ class VisualizationSuite:
     def __init__(self, features_df):
         self.df = features_df.copy()
         
-        # UPDATED: Use 'side' column instead of 'label'
+        # UPDATED: 'side' column instead of 'label'
         self.ai_df = features_df[features_df['side'] == 'AI'].copy()
         self.human_df = features_df[features_df['side'] == 'Human'].copy()
         
-        # UPDATED: Exclude new metadata columns
+        # UPDATED: Excluded new metadata columns
         self.feature_cols = [col for col in features_df.columns 
                             if col not in ['filename', 'side', 'pair_key', 'track_id']]
         
@@ -58,7 +58,7 @@ class VisualizationSuite:
         
         fig, axes = plt.subplots(1, 2, figsize=(12, 4))
         
-        # Histogram comparison
+        # Hist comparison
         axes[0].hist(ai_distances, bins=30, alpha=0.6, label='AI', density=True, color='#FF6B6B')
         axes[0].hist(human_distances, bins=30, alpha=0.6, label='Human', density=True, color='#4ECDC4')
         axes[0].set_xlabel('Pairwise Distance (Euclidean)')

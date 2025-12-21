@@ -16,7 +16,7 @@ AI-generated Afrobeats tracks exhibit reduced diversity compared to human-
 produced tracks.
 
 Analysis Pipeline:
-1. [SKIPPED] Feature extraction (using pre-extracted matched_pairs_comprehensive.csv)
+1. Feature extraction (using pre-extracted matched_pairs_comprehensive.csv)
 2. Test homogenization hypotheses (variance, clustering, coverage, entropy)
 3. Validate matched AI-human pairs
 4. Train classifiers and extract feature importance
@@ -36,7 +36,7 @@ def check_data_file():
     data_file = project_root / "data/afrobeat/matched_pairs_comprehensive.csv"
     
     if not data_file.exists():
-        print(f"❌ ERROR: Data file not found: {data_file}")
+        print(f" ERROR: Data file not found: {data_file}")
         print("   Please run extract_matched_comprehensive_features.py first")
         return False
     
@@ -51,7 +51,7 @@ def check_data_file():
         print(f"  Human tracks: {len(df[df['side']=='Human'])}")
         return True
     except Exception as e:
-        print(f"❌ ERROR loading data file: {e}")
+        print(f" ERROR loading data file: {e}")
         return False
 
 def check_dependencies():
@@ -70,10 +70,10 @@ def check_dependencies():
             print(f"  ✓ {package}")
         except ImportError:
             missing.append(package)
-            print(f"  ❌ {package}")
+            print(f"   {package}")
     
     if missing:
-        print(f"\n❌ Missing packages: {', '.join(missing)}")
+        print(f"\n Missing packages: {', '.join(missing)}")
         print(f"Install with: pip install {' '.join(missing)}")
         return False
     
@@ -92,10 +92,10 @@ def run_analysis_step(script_name, description):
             print(f"✓ {description} completed successfully")
             return True
         else:
-            print(f"❌ {description} failed")
+            print(f"{description} failed")
             return False
     except Exception as e:
-        print(f"❌ Error running {script_name}: {e}")
+        print(f"Error running {script_name}: {e}")
         return False
 
 def main():
@@ -103,11 +103,11 @@ def main():
     
     # Pre-flight checks
     if not check_data_file():
-        print("\n❌ Data file check failed. Please generate the matched pairs CSV first.")
+        print("\nData file check failed. Please generate the matched pairs CSV first.")
         return
     
     if not check_dependencies():
-        print("\n❌ Dependency check failed. Please install missing packages.")
+        print("\nDependency check failed. Please install missing packages.")
         return
     
     print("\n" + "="*80)
@@ -134,7 +134,7 @@ def main():
             success = run_analysis_step(script, description)
             results.append((description, success))
         else:
-            print(f"⚠️  Warning: {script} not found, skipping...")
+            print(f"Warning: {script} not found, skipping...")
             results.append((description, False))
     
     # Summary
@@ -144,7 +144,7 @@ def main():
     
     print("\nStep Results:")
     for step, success in results:
-        status = "✓ PASS" if success else "❌ FAIL"
+        status = "PASS" if success else "FAIL"
         print(f"  {status}: {step}")
     
     successful = sum(1 for _, s in results if s)
