@@ -19,7 +19,4 @@ We compare tracks from Suno (AI) and Spotify (human) across genres such as Afrob
 - `src/` – scripts for data collection and analysis
 - `reports/` – plots and summary tables
 
-## 🧠 Citation
-If using or adapting this pipeline, please cite:
-> Zoe Slendebroek. (2025). *Algorithmic Homogenization in Generative Music Systems*. University of Pennsylvania.
 
