@@ -1,0 +1,2 @@
+ai_mean_dist_to_centroid,ai_median_dist_to_centroid,ai_std_dist_to_centroid,human_mean_dist_to_centroid,human_median_dist_to_centroid,human_std_dist_to_centroid,mw_statistic,mw_pvalue,cliffs_delta,perm_statistic_mean_diff,perm_pvalue,bootstrap_ci_median_diff_lower,bootstrap_ci_median_diff_upper
+6.190556556772872,5.829935831751937,1.4103056419910407,8.490790373120655,7.887637670590335,2.9403101755982948,747.0,1.654933014722064e-08,-0.585,-2.3002338163477827,9.999000099990002e-05,-2.8761788687574943,-1.360036112657161

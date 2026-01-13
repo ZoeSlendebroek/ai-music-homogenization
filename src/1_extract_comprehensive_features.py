@@ -24,7 +24,7 @@ class ComprehensiveFeatureExtractor:
         """Extract comprehensive feature set from audio file"""
         y, sr = librosa.load(audio_path, sr=self.sr)
 
-        # --- NEW: use the middle 30 seconds for comparability with iTunes previews ---
+        # NEW: use the middle 30 seconds for comparability with iTunes previews
         target_len = int(30 * sr)
 
         if len(y) > target_len:
